@@ -1,0 +1,2509 @@
+print("[OAH] Iniciando carga del Creador de Scripts...")
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local HapticService = game:GetService("HapticService")
+local SoundService = game:GetService("SoundService")
+local Player = Players.LocalPlayer
+
+local function GetSafeParent()
+	local s1, r1 = pcall(function()
+		return gethui and gethui()
+	end)
+
+	if s1 and r1 then
+		return r1
+	end
+
+	local s2, r2 = pcall(function()
+		return game:GetService("CoreGui")
+	end)
+
+	if s2 and r2 then
+		return r2
+	end
+
+	return Player:WaitForChild("PlayerGui")
+end
+
+local ParentTarget = GetSafeParent()
+
+local OldGUI = ParentTarget:FindFirstChild("OAH_SCRIPT_EDITOR")
+
+if OldGUI then
+	OldGUI:Destroy()
+end
+
+local GUI = Instance.new("ScreenGui")
+GUI.Name = "OAH_SCRIPT_EDITOR"
+GUI.ResetOnSpawn = false
+GUI.IgnoreGuiInset = true
+GUI.DisplayOrder = 2147483647
+GUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+pcall(function()
+	GUI.ScreenInsets = Enum.ScreenInsets.None
+end)
+
+GUI.Parent = ParentTarget
+
+-- Sonido grave y horrible global para botones
+local clickSound = Instance.new("Sound")
+clickSound.SoundId = "rbxassetid://9114220405"
+clickSound.Volume = 0.5
+clickSound.PlaybackSpeed ​​= 0,45
+clickSound.Parent = GUI
+
+local function playClickFeedback()
+	pcall(function()
+		clickSound:Play()
+	end)
+	pcall(function()
+		if HapticService:IsVibrationSupported(Enum.UserInputType.Gamepad1) then
+			HapticService:SetMotor(Enum.UserInputType.Gamepad1, Enum.VibrationMotor.Large, 0.4)
+			task.delay(0.1, function()
+				HapticService:SetMotor(Enum.UserInputType.Gamepad1, Enum.VibrationMotor.Large, 0)
+			end)
+		end
+	end)
+end
+
+local EditorMode = true
+
+local expandedSize = UDim2.new(0.8, 0, 0.8, 0)
+local minimizedSize = UDim2.new(0.35, 0, 0, 50)
+
+-- Limites para la redimensión (en píxeles)
+local MIN_SIZE = Vector2.new(450, 300)
+local MAX_SIZE = Vector2.new(1200, 800)
+
+local function tw(o, t, p)
+	local ok, tween = pcall(function()
+		return TweenService:Create(
+			o,
+			TweenInfo.new(
+				t,
+				Enum.EasingStyle.Quart,
+				Enum.EasingDirection.Salida
+			),
+			pag
+		)
+	end)
+
+	if está bien and entre then
+		tween:Play()
+	end
+end
+
+local function cr(o, r)
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, r)
+	c.Parent = o
+end
+
+local function st(o, c, w)
+	local s = Instance.new("UIStroke")
+	s.Color = c
+	s.Thickness = w
+	s.Parent = or
+	return
+end
+
+--------------------------------------------------
+-- PLANTILLA DEL MENÚ GENERADO
+--------------------------------------------------
+
+local function GetBaseTemplate()
+	return [==[
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local HapticService = game:GetService("HapticService")
+local Player = Players.LocalPlayer
+
+local function GetSafeParent()
+	local s1, r1 = pcall(function()
+		return gethui and gethui()
+	end)
+
+	if s1 and r1 then
+		return r1
+	end
+
+	local s2, r2 = pcall(function()
+		return game:GetService("CoreGui")
+	end)
+
+	if s2 and r2 then
+		return r2
+	end
+
+	return Player:WaitForChild("PlayerGui")
+end
+
+local ParentTarget = GetSafeParent()
+
+local OldGUI = ParentTarget:FindFirstChild("OAH_SCRIPT_MENU")
+
+if OldGUI then
+	OldGUI:Destroy()
+end
+
+local GUI = Instance.new("ScreenGui")
+GUI.Name = "OAH_SCRIPT_MENU"
+GUI.ResetOnSpawn = false
+GUI.IgnoreGuiInset = true
+GUI.DisplayOrder = 2147483647
+GUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+pcall(function()
+	GUI.ScreenInsets = Enum.ScreenInsets.None
+end)
+
+GUI.Parent = ParentTarget
+
+local clickSound = Instance.new("Sound")
+clickSound.SoundId = "rbxassetid://9114220405"
+clickSound.Volume = 0.5
+clickSound.PlaybackSpeed ​​= 0,45
+clickSound.Parent = GUI
+
+local function playClickFeedback()
+	pcall(function() clickSound:Play() end)
+	pcall(function()
+		if HapticService:IsVibrationSupported(Enum.UserInputType.Gamepad1) then
+			HapticService:SetMotor(Enum.UserInputType.Gamepad1, Enum.VibrationMotor.Large, 0.4)
+			task.delay(0.1, function()
+				HapticService:SetMotor(Enum.UserInputType.Gamepad1, Enum.VibrationMotor.Large, 0)
+			end)
+		end
+	end)
+end
+
+local function tw(o, t, p)
+	TweenService:Crear(
+		o,
+		TweenInfo.new(
+			t,
+			Enum.EasingStyle.Quart,
+			Enum.EasingDirection.Salida
+		),
+		pag
+	):Jugar()
+end
+
+local function cr(o, r)
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, r)
+	c.Parent = o
+end
+
+local function st(o, c, w)
+	local s = Instance.new("UIStroke")
+	s.Color = c
+	s.Thickness = w
+	s.Parent = or
+	return
+end
+
+local MIN_SIZE = Vector2.new(450, 300)
+local MAX_SIZE = Vector2.new(1200, 800)
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0.8, 0, 0.8, 0)
+Main.Position = UDim2.new(0.5, 0, 0.1, 0)
+Main.AnchorPoint = Vector2.new(0.5, 0)
+Main.BackgroundColor3 = Color3.fromRGB(8, 10, 16)
+Transparencia del fondo principal = 0,15
+Main.BorderSizePixel = 0
+Main.ClipsDescendants = true
+Main.Active = true
+Main.Parent = GUI
+
+cr(Main, 12)
+st(Main, Color3.fromRGB(0, 170, 255), 2)
+
+local Particles = Instance.new("Frame")
+Particles.Size = UDim2.new(1, 0, 1, 0)
+Particles.BackgroundTransparency = 1
+Particles.ClipsDescendants = true
+Particles.ZIndex = 0
+Particles.Parent = Main
+
+task.spawn(function()
+	while Main.Parent lo hace
+		local p = Instance.new("Frame")
+		p.Size = UDim2.new(0, math.random(2, 5), 0, math.random(2, 5))
+		p.Position = UDim2.new(math.random(), 0, -0.1, 0)
+		p.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+		p.BackgroundTransparency = math.random(30, 80) / 100
+		p.ZIndex = 0
+
+		cr(p, 50)
+		p.Parent = Particles
+
+		local duration = math.random(6, 14)
+		local endX = p.Position.X.Scale + math.random(-10, 10) / 100
+
+		local t = TweenService:Create(
+			pag,
+			TweenInfo.new(duración, Enum.EasingStyle.Linear),
+			{
+				Position = UDim2.new(endX, 0, 1.1, 0),
+				BackgroundTransparency = 1
+			}
+		)
+
+		t:Reproducir()
+
+		task.delay(duración, function()
+			if p then
+				p:Destroy()
+			end
+		end)
+
+		task.wait(math.random(2, 6) / 10)
+	end
+end)
+
+local Top = Instance.new("Frame")
+Top.Size = UDim2.new(1, 0, 0, 50)
+Top.BackgroundTransparency = 1
+Top.Active = true
+Top.ZIndex = 5
+Top.Parent = Main
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -150, 0, 26)
+Title.Position = UDim2.fromOffset(16, 4)
+Title.BackgroundTransparency = 1
+Title.Text = "OAH | MENÚ DE GUIÓN"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextColor3 = Color3.fromRGB(0, 220, 255)
+Title.TextXAlignment = Enum.TextXAlignment.Izquierda
+Title.Parent = Top
+
+local CloseBtn = Instance.new("ImageButton")
+CloseBtn.Size = UDim2.fromOffset(32, 28)
+CloseBtn.Position = UDim2.new(1, -42, 0, 10)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(45, 15, 20)
+CloseBtn.Image = "rbxassetid://6031094678"
+CloseBtn.ImageColor3 = Color3.fromRGB(255, 80, 80)
+CloseBtn.Parent = Top
+
+cr(CloseBtn, 8)
+st(CloseBtn, Color3.fromRGB(255, 60, 60), 1)
+
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size = UDim2.fromOffset(32, 28)
+MinBtn.Position = UDim2.new(1, -80, 0, 10)
+MinBtn.BackgroundColor3 = Color3.fromRGB(15, 22, 35)
+MinBtn.Text = "-"
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.TextSize = 20
+MinBtn.TextColor3 = Color3.new(1, 1, 1)
+MinBtn.Parent = Top
+
+cr(MinBtn, 8)
+st(MinBtn, Color3.fromRGB(0, 170, 255), 1)
+
+local SidePanel = Instance.new("Frame")
+SidePanel.Size = UDim2.new(0, 160, 1, -60)
+SidePanel.Position = UDim2.fromOffset(10, 50)
+SidePanel.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
+SidePanel.BackgroundTransparency = 0,4
+SidePanel.Parent = Main
+
+cr(SidePanel, 8)
+st(SidePanel, Color3.fromRGB(20, 30, 45), 1)
+
+local CategoryScroll = Instance.new("ScrollingFrame")
+CategoryScroll.Size = UDim2.new(1, -8, 1, -10)
+CategoryScroll.Position = UDim2.fromOffset(4, 5)
+CategoryScroll.BackgroundTransparency = 1
+CategoryScroll.BorderSizePixel = 0
+CategoryScroll.ScrollBarThickness = 2
+CategoryScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
+CategoryScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+CategoryScroll.Parent = SidePanel
+
+local CategoryLayout = Instance.new("UIListLayout")
+CategoryLayout.Padding = UDim.new(0, 5)
+CategoryLayout.Parent = CategoryScroll
+
+local ContentArea = Instance.new("Frame")
+ContentArea.Size = UDim2.new(1, -190, 1, -60)
+ContentArea.Position = UDim2.fromOffset(180, 50)
+ContentArea.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
+ContentArea.BackgroundTransparency = 0.4
+ContentArea.Parent = Main
+
+cr(ContentArea, 8)
+st(ContentArea, Color3.fromRGB(20, 30, 45), 1)
+
+-- 1. PRIMERO CREAMOS EL CONTENEDOR DE OPCIONES (Fondo)
+local OptionContainer = Instance.new("Frame")
+OptionContainer.Size = UDim2.new(1, 0, 1, -35)
+OptionContainer.Position = UDim2.fromOffset(0, 35)
+OptionContainer.BackgroundTransparency = 1
+OptionContainer.Parent = ContentArea
+
+-- 2. DESPUÉS CREAMOS LA CABECERA Y EL BUSCADOR (Para que quede al frente y nunca debajo de los botones)
+local ContentHeader = Instance.new("Frame")
+ContentHeader.Size = UDim2.new(1, 0, 0, 35)
+ContentHeader.BackgroundTransparency = 1
+ContentHeader.ZIndex = 200
+ContentHeader.Parent = ContentArea
+
+local CurrentCatTitle = Instance.new("TextLabel")
+CurrentCatTitle.Size = UDim2.new(1, -180, 1, 0)
+CurrentCatTitle.Position = UDim2.fromOffset(10, 0)
+CurrentCatTitle.BackgroundTransparency = 1
+CurrentCatTitle.Font = Enum.Font.GothamBold
+CurrentCatTitle.TextSize = 13
+CurrentCatTitle.TextColor3 = Color3.new(1, 1, 1)
+CurrentCatTitle.TextXAlignment = Enum.TextXAlignment.Left
+CurrentCatTitle.Parent = ContentHeader
+
+local SearchBoxFrame = Instance.new("Frame")
+SearchBoxFrame.Size = UDim2.new(0, 160, 0, 26)
+SearchBoxFrame.Position = UDim2.new(1, -170, 0, 4)
+SearchBoxFrame.BackgroundColor3 = Color3.fromRGB(8, 12, 19)
+SearchBoxFrame.ZIndex = 500
+SearchBoxFrame.Parent = ContentHeader
+cr(SearchBoxFrame, 6)
+st(SearchBoxFrame, Color3.fromRGB(35, 55, 75), 1)
+
+local SearchIcon = Instance.new("ImageLabel")
+SearchIcon.Size = UDim2.fromOffset(16, 16)
+SearchIcon.Position = UDim2.fromOffset(5, 5)
+SearchIcon.BackgroundTransparency = 1
+SearchIcon.Image = "rbxassetid://6031154871"
+SearchIcon.ImageColor3 = Color3.fromRGB(0, 170, 255)
+SearchIcon.ZIndex = 501
+SearchIcon.Parent = SearchBoxFrame
+
+local SearchInput = Instance.new("TextBox")
+SearchInput.Size = UDim2.new(1, -26, 1, 0)
+SearchInput.Position = UDim2.fromOffset(24, 0)
+SearchInput.BackgroundTransparency = 1
+SearchInput.PlaceholderText = "Buscar botón..."
+SearchInput.Text = ""
+SearchInput.TextColor3 = Color3.new(1, 1, 1)
+SearchInput.PlaceholderColor3 = Color3.fromRGB(120, 140, 160)
+SearchInput.Font = Enum.Font.Gotham
+SearchInput.TextSize = 11
+SearchInput.TextXAlignment = Enum.TextXAlignment.Left
+SearchInput.ClearTextOnFocus = false
+SearchInput.ZIndex = 501
+SearchInput.Parent = SearchBoxFrame
+
+local SearchResultsScroll = Instance.new("ScrollingFrame")
+SearchResultsScroll.Size = UDim2.new(1, 0, 0, 120)
+SearchResultsScroll.Position = UDim2.new(0, 0, 1, 4)
+SearchResultsScroll.BackgroundColor3 = Color3.fromRGB(14, 18, 26)
+SearchResultsScroll.Visible = false
+SearchResultsScroll.ZIndex = 999
+SearchResultsScroll.BorderSizePixel = 0
+SearchResultsScroll.ScrollBarThickness = 2
+SearchResultsScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+SearchResultsScroll.Parent = SearchBoxFrame
+cr(SearchResultsScroll, 6)
+st(SearchResultsScroll, Color3.fromRGB(0, 170, 255), 1)
+
+local SearchLayout = Instance.new("UIListLayout")
+SearchLayout.Padding = UDim.new(0, 2)
+SearchLayout.Parent = SearchResultsScroll
+
+-- BOTÓN DE REDIMENSIONAR
+local ResizeBtn = Instance.new("ImageButton")
+ResizeBtn.Size = UDim2.fromOffset(22, 22)
+ResizeBtn.AnchorPoint = Vector2.new(1, 1)
+ResizeBtn.Position = UDim2.new(1, -6, 1, -6)
+ResizeBtn.BackgroundTransparency = 1
+ResizeBtn.Image = "rbxassetid://10723385202"
+ResizeBtn.ImageColor3 = Color3.fromRGB(0, 170, 255)
+ResizeBtn.ZIndex = 25
+ResizeBtn.Parent = Main
+
+local resizing = false
+local resizeStartPos
+local resizeStartSize
+
+ResizeBtn.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		redimensionamiento = true
+		resizeStartPos = input.Position
+		resizeStartSize = Main.AbsoluteSize
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		local delta = input.Position - resizeStartPos
+		local newX = math.clamp(resizeStartSize.X + delta.X, MIN_SIZE.X, MAX_SIZE.X)
+		local newY = math.clamp(resizeStartSize.Y + delta.Y, MIN_SIZE.Y, MAX_SIZE.Y)
+		Main.Size = UDim2.fromOffset(nuevoX, nuevoY)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		redimensionamiento = false
+	end
+end)
+
+local function ejecutarCodigoConsola(codigo, estado, valor)
+	if not codigo or string.match(codigo, "^%s*$") then
+		return
+	end
+
+	local envHeader = string.format(
+		"local state = %s\nlocal estado = %s\nlocal value = %s\nlocal valor = %s\nlocal Player = game:GetService('Players').LocalPlayer\nlocal Players = game:GetService('Players')",
+		tostring(estado or false),
+		tostring(estado or false),
+		tostring(valor or 0),
+		tostring(valor or 0)
+	)
+
+	local func, err = loadstring(envHeader .. "\n" .. codigo)
+
+	if func then
+		task.spawn(func)
+	else
+		advertir("[Error en el script]:", err)
+	end
+end
+
+local categories = {}
+local activeOptionsRegistry = {}
+
+local function switchCategory(catData)
+	CurrentCatTitle.Text = catData.Name
+
+	for _, v in pairs(categories) do
+		v.Scroll.Visible = false
+		v.Btn.BackgroundColor3 = Color3.fromRGB(18, 24, 36)
+	end
+
+	catData.Scroll.Visible = true
+	catData.Btn.BackgroundColor3 = Color3.fromRGB(0, 120, 225)
+end
+
+local function updateSearchResults()
+	for _, child in ipairs(SearchResultsScroll:GetChildren()) do
+		if child:IsA("TextButton") then child:Destroy() end
+	end
+
+	local query = string.lower(SearchInput.Text)
+	if query == "" then
+		SearchResultsScroll.Visible = false
+		return
+	end
+
+	local count = 0
+	for _, cat in ipairs(categories) do
+		for _, opt in ipairs(cat.Options) do
+			if string.find(string.lower(opt.Name), query, 1, true) then
+				count = count + 1
+				local item = Instance.new("TextButton")
+				item.Size = UDim2.new(1, -4, 0, 26)
+				item.BackgroundColor3 = Color3.fromRGB(22, 28, 40)
+				item.Text = " " .. opt.Name .. " (" .. cat.Name .. ")"
+				item.Font = Enum.Font.Gotham
+				item.TextSize = 10
+				item.TextColor3 = Color3.fromRGB(200, 220, 255)
+				item.TextXAlignment = Enum.TextXAlignment.Left
+				item.ZIndex = 1000
+				item.Parent = SearchResultsScroll
+				cr(item, 4)
+
+				item.MouseButton1Click:Connect(function()
+					playClickFeedback()
+					switchCategory(cat)
+					SearchResultsScroll.Visible = false
+					SearchInput.Text = ""
+
+					if opt.Frame then
+						local targetY = math.clamp(opt.Frame.Position.Y.Offset - 10, 0, math.max(0, cat.Scroll.AbsoluteCanvasSize.Y - cat.Scroll.AbsoluteSize.Y))
+						tw(cat.Scroll, 0.3, { CanvasPosition = Vector2.new(0, targetY) })
+
+						local orig = opt.Frame.BackgroundColor3
+						tw(opt.Frame, 0.2, {BackgroundColor3 = Color3.fromRGB(0, 170, 255)})
+						task.delay(0.4, function()
+							tw(opt.Frame, 0.4, {BackgroundColor3 = orig})
+						end)
+					end
+				end)
+			end
+		end
+	end
+
+	SearchResultsScroll.Visible = (count > 0)
+end
+
+SearchInput:GetPropertyChangedSignal("Text"):Connect(updateSearchResults)
+
+local function createValueBox(parentScroll, optionData)
+	local valueFrame = Instance.new("Frame")
+	valueFrame.Size = UDim2.new(1, -10, 0, 38)
+	valueFrame.BackgroundColor3 = Color3.fromRGB(14, 20, 29)
+	valueFrame.Parent = parentScroll
+
+	cr(valueFrame, 6)
+	st(valueFrame, Color3.fromRGB(0, 120, 225), 1)
+
+	local valueLabel = Instance.new("TextLabel")
+	valueLabel.Size = UDim2.new(0.45, -10, 1, 0)
+	valueLabel.Position = UDim2.fromOffset(10, 0)
+	valueLabel.BackgroundTransparency = 1
+	valueLabel.Text = "Valor"
+	valueLabel.Font = Enum.Font.GothamBold
+	valueLabel.TextSize = 11
+	valueLabel.TextColor3 = Color3.fromRGB(0, 190, 255)
+	valueLabel.TextXAlignment = Enum.TextXAlignment.Left
+	valueLabel.Parent = valueFrame
+
+	local valueInput = Instance.new("TextBox")
+	valueInput.Size = UDim2.new(0.55, -16, 0, 28)
+	valueInput.Position = UDim2.new(0.45, 2, 0.5, -14)
+	valueInput.BackgroundColor3 = Color3.fromRGB(8, 12, 19)
+	valueInput.TextColor3 = Color3.fromRGB(0, 220, 255)
+	valueInput.Font = Enum.Font.Code
+	valueInput.TextSize = 12
+	valueInput.Text = tostring(optionData.ValueDefault or 0)
+	valueInput.PlaceholderText = "Valor"
+	valueInput.ClearTextOnFocus = false
+	valueInput.Parent = valueFrame
+
+	cr(valorEntrada, 5)
+	st(valueInput, Color3.fromRGB(35, 55, 75), 1)
+
+	valorInput.FocusLost:Connect(function()
+		local n = tonumber(valueInput.Text)
+		if n ~= nil then
+			optionData.ValueDefault = n
+			valorInput.Text = tostring(n)
+		else
+			valueInput.Text = tostring(optionData.ValueDefault or 0)
+		end
+	end)
+
+	optionData.ValueFrame = valueFrame
+	optionData.ValueInput = valueInput
+
+	return valueFrame
+end
+
+local function buildOption(nombre, typeId, parentScroll, code, valueEnabled, valueDefault, targetCat)
+	local optionData = {
+		Name = name,
+		TypeId = typeId or 1,
+		Code = code or "",
+		ValueEnabled = valueEnabled == true,
+		ValueDefault = tonumber(valueDefault) or 0
+	}
+
+	if targetCat then
+		tabla.insertar(targetCat.Options, optionData)
+	end
+
+	local cont = Instance.new("Frame")
+	cont.Size = UDim2.new(1, -10, 0, 38)
+	cont.BackgroundColor3 = Color3.fromRGB(18, 24, 34)
+	cont.Parent = parentScroll
+
+	cr(cont, 6)
+	st(cont, Color3.fromRGB(30, 40, 50), 1)
+	optionData.Frame = cont
+
+	local mainBtn = Instance.new("TextButton", cont)
+	mainBtn.Size = UDim2.new(1, 0, 1, 0)
+	mainBtn.BackgroundTransparency = 1
+	mainBtn.Text = ""
+
+	local estado = false
+
+	local function triggerAction(newState)
+		estado = nuevoEstado
+		activeOptionsRegistry[optionData] = estado and optionData or nil
+
+		if typeId == 1 then
+			local bg = cont:FindFirstChildWhichIsA("Frame", true)
+			local circle = bg and bg:FindFirstChildWhichIsA("Frame")
+			if bg and circle then
+				tw(bg, 0.3, {
+					BackgroundColor3 = estado and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(30, 40, 50)
+				})
+				tw(circle, 0.3, {
+					Position = estado and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+				})
+			end
+		elseif typeId == 3 then
+			local lbl = cont:FindFirstChildWhichIsA("TextLabel")
+			if lbl then
+				if estado then
+					lbl.Text = "[ON] " .. nombre
+					lbl.TextColor3 = Color3.fromRGB(0, 220, 255)
+					cont.BackgroundColor3 = Color3.fromRGB(24, 38, 55)
+				else
+					lbl.Text = "[OFF] " .. nombre
+					lbl.TextColor3 = Color3.fromRGB(150, 160, 175)
+					cont.BackgroundColor3 = Color3.fromRGB(18, 24, 34)
+				end
+			end
+		elseif typeId == 2 then
+			cont.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+			tw(cont, 0.4, { BackgroundColor3 = Color3.fromRGB(18, 24, 34) })
+		end
+
+		ejecutarCodigoConsola(optionData.Code, state, optionData.ValueDefault)
+	end
+
+	if typeId == 1 then
+		local lbl = Instance.new("TextLabel", cont)
+		lbl.Size = UDim2.new(1, -60, 1, 0)
+		lbl.Position = UDim2.fromOffset(10, 0)
+		lbl.BackgroundTransparency = 1
+		lbl.Text = nombre
+		lbl.Font = Enum.Font.Gotham
+		lbl.TextColor3 = Color3.new(1, 1, 1)
+		lbl.TextXAlignment = Enum.TextXAlignment.Left
+
+		local bg = Instance.new("Frame", cont)
+		bg.Size = UDim2.new(0, 40, 0, 20)
+		bg.Position = UDim2.new(1, -48, 0.5, -10)
+		bg.BackgroundColor3 = Color3.fromRGB(30, 40, 50)
+		cr(bg, 10)
+
+		local circle = Instance.new("Frame", bg)
+		circle.Size = UDim2.new(0, 16, 0, 16)
+		circle.Position = UDim2.new(0, 2, 0.5, -8)
+		circle.BackgroundColor3 = Color3.new(1, 1, 1)
+		cr(circle, 8)
+	elseif typeId == 2 then
+		local lbl = Instance.new("TextLabel", cont)
+		lbl.Size = UDim2.new(1, -20, 1, 0)
+		lbl.Position = UDim2.fromOffset(10, 0)
+		lbl.BackgroundTransparency = 1
+		lbl.Text = "▶ " .. nombre
+		lbl.Font = Enum.Font.Gotham
+		lbl.TextColor3 = Color3.new(1, 1, 1)
+		lbl.TextXAlignment = Enum.TextXAlignment.Left
+	elseif typeId == 3 then
+		local lbl = Instance.new("TextLabel", cont)
+		lbl.Size = UDim2.new(1, -20, 1, 0)
+		lbl.Position = UDim2.fromOffset(10, 0)
+		lbl.BackgroundTransparency = 1
+		lbl.Text = "[OFF] " .. nombre
+		lbl.Font = Enum.Font.Gotham
+		lbl.TextColor3 = Color3.fromRGB(150, 160, 175)
+		lbl.TextXAlignment = Enum.TextXAlignment.Left
+	end
+
+	local touchStartPos = nil
+	mainBtn.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			touchStartPos = input.Position
+		end
+	end)
+
+	mainBtn.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			if touchStartPos then
+				local delta = (input.Position - touchStartPos).Magnitude
+				if delta < 15 then
+					playClickFeedback()
+					if typeId == 2 then
+						triggerAction(true)
+					else
+						triggerAction(not estado)
+					end
+				end
+				touchStartPos = nil
+			end
+		end
+	end)
+
+	if optionData.ValueEnabled then
+		createValueBox(parentScroll, optionData)
+	end
+
+	Player.CharacterAdded:Connect(function()
+		task.wait(0.5)
+		if activeOptionsRegistry[optionData] then
+			ejecutarCodigoConsola(optionData.Code, true, optionData.ValueDefault)
+		end
+	end)
+end
+
+local function createCategory(nombre)
+	local CatFrame = Instance.new("Frame")
+	CatFrame.Size = UDim2.new(1, 0, 0, 32)
+	CatFrame.BackgroundColor3 = Color3.fromRGB(18, 24, 36)
+	CatFrame.Parent = CategoryScroll
+
+	cr(CatFrame, 6)
+
+	local Btn = Instance.new("TextButton", CatFrame)
+	Btn.Size = UDim2.new(1, 0, 1, 0)
+	Btn.BackgroundTransparency = 1
+	Btn.Text = " " .. nombre
+	Btn.Font = Enum.Font.Gotham
+	Btn.TextSize = 11
+	Btn.TextColor3 = Color3.fromRGB(180, 195, 215)
+	Btn.TextXAlignment = Enum.TextXAlignment.Left
+
+	local Scroll = Instance.new("ScrollingFrame")
+	Scroll.Size = UDim2.new(1, -12, 1, -10)
+	Scroll.Position = UDim2.fromOffset(6, 5)
+	ScrollingFrame.BackgroundTransparency = 1
+	ScrollingFrame.BorderSizePixel = 0
+	Scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	ScrollingFrame.Visible = false
+	Scroll.Parent = OptionContainer
+
+	local Layout = Instance.new("UIListLayout")
+	Layout.Padding = UDim.new(0, 6)
+	Layout.Parent = ScrollingFrame
+
+	local catData = {
+		Name = name,
+		Btn = CatFrame,
+		ScrollingFrame = ScrollingFrame,
+		Opciones = {}
+	}
+
+	tabla.insertar(categories, catData)
+
+	Btn.MouseButton1Click:Connect(function()
+		playClickFeedback()
+		switchCategory(catData)
+	end)
+
+	return catData
+end
+
+local dragging
+local dragStart
+local startPos
+
+Top.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch
+		o input.UserInputType == Enum.UserInputType.MouseButton1 then
+		arrastrando = true
+		dragStart = input.Position
+		startPos = Main.Position
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if arrastra and (
+		input.UserInputType == Enum.UserInputType.Touch
+		o input.UserInputType == Enum.UserInputType.MouseMovement
+	) then
+		local delta = input.Position - dragStart
+		local vs = workspace.CurrentCamera.ViewportSize
+		local hw = Main.AbsoluteSize.X / 2
+		local curX = startPos.X.Offset
+		local curY = startPos.Y.Offset
+
+		local newX = math.clamp(curX + delta.X, hw, vs.X - hw)
+		local nuevoY = math.clamp(curY + delta.Y, 0, vs.Y - 50)
+
+		Main.Position = UDim2.new(0, nuevoX, 0, nuevoY)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch
+		o input.UserInputType == Enum.UserInputType.MouseButton1 then
+		arrastrando = false
+	end
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	tw(Main, 0.3, { Size = UDim2.new(0, 0, 0, 0) })
+	task.delay(0.3, function()
+		GUI:Destroy()
+	end)
+end)
+
+local minimized = false
+
+MinBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	minimizado = not minimizado
+
+	if se minimiza then
+		MinBtn.Text = "+"
+		SidePanel.Visible = false
+		ContentArea.Visible = false
+		ResizeBtn.Visible = false
+
+		tw(Main, 0.3, { Size = UDim2.new(0.35, 0, 0, 50) })
+	else
+		MinBtn.Text = "-"
+		tw(Main, 0.3, { Size = UDim2.new(0.8, 0, 0.8, 0) })
+
+		task.delay(0.2, function()
+			if not minimized then
+				SidePanel.Visible = true
+				ContentArea.Visible = true
+				ResizeBtn.Visible = true
+			end
+		end)
+	end
+end)
+
+local first = createCategory("Principal")
+
+buildOption(
+	"Súper Velocidad (Ejemplo)",
+	1,
+	first.Desplázate,
+	[[
+local char = Player.Personaje
+
+if char and char:FindFirstChild("Humanoid") then
+	if estado then
+		char.Humanoid.WalkSpeed ​​= valor
+	else
+		char.Humanoid.WalkSpeed ​​= 16
+	end
+end
+]],
+	true,
+	116,
+	first
+)
+
+switchCategory(first)
+]==]
+end
+
+--------------------------------------------------
+-- PRINCIPAL (CREADOR)
+--------------------------------------------------
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0, 0, 0, 0)
+Main.Position = UDim2.new(0.5, 0, 0.1, 0)
+Main.AnchorPoint = Vector2.new(0.5, 0)
+Main.BackgroundColor3 = Color3.fromRGB(8, 10, 16)
+Transparencia del fondo principal = 0,15
+Main.BorderSizePixel = 0
+Main.ClipsDescendants = true
+Main.Active = true
+Main.Parent = GUI
+
+cr(Main, 12)
+st(Main, Color3.fromRGB(0, 170, 255), 2)
+
+--------------------------------------------------
+-- PARTÍCULAS
+--------------------------------------------------
+
+local Particles = Instance.new("Frame")
+Particles.Size = UDim2.new(1, 0, 1, 0)
+Particles.BackgroundTransparency = 1
+Particles.ClipsDescendants = true
+Particles.ZIndex = 0
+Particles.Parent = Main
+
+task.spawn(function()
+	while Main.Parent lo hace
+		local p = Instance.new("Frame")
+		p.Size = UDim2.new(0, math.random(2, 5), 0, math.random(2, 5))
+		p.Position = UDim2.new(math.random(), 0, -0.1, 0)
+		p.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+		p.BackgroundTransparency = math.random(30, 80) / 100
+		p.ZIndex = 0
+
+		cr(p, 50)
+		p.Parent = Particles
+
+		local duration = math.random(6, 14)
+		local endX = p.Position.X.Scale + math.random(-10, 10) / 100
+
+		local t = TweenService:Create(
+			pag,
+			TweenInfo.new(duración, Enum.EasingStyle.Linear),
+			{
+				Position = UDim2.new(endX, 0, 1.1, 0),
+				BackgroundTransparency = 1
+			}
+		)
+
+		t:Reproducir()
+
+		task.delay(duración, function()
+			if p then
+				p:Destroy()
+			end
+		end)
+
+		task.wait(math.random(2, 6) / 10)
+	end
+end)
+
+--------------------------------------------------
+-- BARRA
+--------------------------------------------------
+
+local XenonBar = Instance.new("Frame")
+XenonBar.Size = UDim2.new(0, 0, 0, 3)
+XenonBar.Position = UDim2.new(0.5, 0, 0, 0)
+XenonBar.AnchorPoint = Vector2.new(0.5, 0)
+XenonBar.BackgroundColor3 = Color3.fromRGB(0, 220, 255)
+XenonBar.BorderSizePixel = 0
+XenonBar.ZIndex = 20
+XenonBar.Parent = Main
+
+--------------------------------------------------
+-- ARRIBA
+--------------------------------------------------
+
+local Top = Instance.new("Frame")
+Top.Size = UDim2.new(1, 0, 0, 50)
+Top.BackgroundTransparency = 1
+Top.Active = true
+Top.ZIndex = 10
+Top.Parent = Main
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -120, 0, 26)
+Title.Position = UDim2.fromOffset(16, 4)
+Title.BackgroundTransparency = 1
+Title.Text = "OAH | CREADOR DE GUIONES"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.TextXAlignment = Enum.TextXAlignment.Izquierda
+Title.Parent = Top
+
+local ActionButtons = Instance.new("Frame")
+ActionButtons.Size = UDim2.new(1, -100, 1, 0)
+ActionButtons.BackgroundTransparency = 1
+ActionButtons.Parent = Top
+
+local CloseBtn = Instance.new("ImageButton")
+CloseBtn.Size = UDim2.fromOffset(32, 28)
+CloseBtn.Position = UDim2.new(1, -42, 0, 10)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(45, 15, 20)
+CloseBtn.Image = "rbxassetid://6031094678"
+CloseBtn.ImageColor3 = Color3.fromRGB(255, 80, 80)
+CloseBtn.Parent = Top
+
+cr(CloseBtn, 8)
+st(CloseBtn, Color3.fromRGB(255, 60, 60), 1)
+
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size = UDim2.fromOffset(32, 28)
+MinBtn.Position = UDim2.new(1, -80, 0, 10)
+MinBtn.BackgroundColor3 = Color3.fromRGB(15, 22, 35)
+MinBtn.Text = "-"
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.TextSize = 20
+MinBtn.TextColor3 = Color3.new(1, 1, 1)
+MinBtn.Parent = Top
+
+cr(MinBtn, 8)
+st(MinBtn, Color3.fromRGB(0, 170, 255), 1)
+
+-- BOTÓN PARA VOLVER A MODO EDITOR
+local ReturnEditorBtn = Instance.new("TextButton")
+ReturnEditorBtn.Size = UDim2.fromOffset(100, 28)
+ReturnEditorBtn.Position = UDim2.new(1, -190, 0, 10)
+ReturnEditorBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 225)
+ReturnEditorBtn.Text = "✎ Editar"
+ReturnEditorBtn.Font = Enum.Font.GothamBold
+ReturnEditorBtn.TextSize = 12
+ReturnEditorBtn.TextColor3 = Color3.new(1, 1, 1)
+ReturnEditorBtn.Visible = false
+ReturnEditorBtn.Parent = Top
+
+cr(ReturnEditorBtn, 8)
+st(ReturnEditorBtn, Color3.fromRGB(0, 220, 255), 1)
+
+local CopyBtn = Instance.new("TextButton")
+CopyBtn.Size = UDim2.fromOffset(80, 28)
+CopyBtn.Position = UDim2.new(1, -170, 0, 10)
+CopyBtn.BackgroundColor3 = Color3.fromRGB(15, 22, 35)
+CopyBtn.Text = "Copiar"
+CopyBtn.Font = Enum.Font.GothamBold
+CopyBtn.TextSize = 12
+CopyBtn.TextColor3 = Color3.new(1, 1, 1)
+CopyBtn.Parent = ActionButtons
+
+cr(CopyBtn, 8)
+st(CopyBtn, Color3.fromRGB(0, 170, 255), 1)
+
+local ViewBtn = Instance.new("TextButton")
+ViewBtn.Size = UDim2.fromOffset(85, 28)
+ViewBtn.Position = UDim2.new(1, -261, 0, 10)
+ViewBtn.BackgroundColor3 = Color3.fromRGB(15, 22, 35)
+ViewBtn.Text = " Ver"
+ViewBtn.Font = Enum.Font.GothamBold
+ViewBtn.TextSize = 12
+ViewBtn.TextColor3 = Color3.new(1, 1, 1)
+ViewBtn.Parent = ActionButtons
+
+cr(ViewBtn, 8)
+st(ViewBtn, Color3.fromRGB(0, 170, 255), 1)
+
+local ViewIcon = Instance.new("ImageLabel")
+ViewIcon.Size = UDim2.fromOffset(16, 16)
+ViewIcon.Position = UDim2.new(0, 8, 0.5, -8)
+ViewIcon.BackgroundTransparency = 1
+ViewIcon.Image = "rbxassetid://6031097228"
+ViewIcon.ImageColor3 = Color3.fromRGB(0, 170, 255)
+ViewIcon.Parent = ViewBtn
+
+local ExecBtn = Instance.new("TextButton")
+ExecBtn.Size = UDim2.fromOffset(100, 28)
+ExecBtn.Position = UDim2.new(1, -369, 0, 10)
+ExecBtn.BackgroundColor3 = Color3.fromRGB(20, 160, 70)
+ExecBtn.Text = "Ejecutar"
+ExecBtn.Font = Enum.Font.GothamBold
+ExecBtn.TextSize = 12
+ExecBtn.TextColor3 = Color3.new(1, 1, 1)
+ExecBtn.Parent = ActionButtons
+
+cr(ExecBtn, 8)
+st(ExecBtn, Color3.fromRGB(30, 200, 90), 1)
+
+--------------------------------------------------
+-- PANEL LATERAL
+--------------------------------------------------
+
+local SidePanel = Instance.new("Frame")
+SidePanel.Size = UDim2.new(0, 160, 1, -60)
+SidePanel.Position = UDim2.fromOffset(10, 50)
+SidePanel.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
+SidePanel.BackgroundTransparency = 0,4
+SidePanel.Parent = Main
+
+cr(SidePanel, 8)
+st(SidePanel, Color3.fromRGB(20, 30, 45), 1)
+
+local SideHeader = Instance.new("Frame")
+SideHeader.Size = UDim2.new(1, 0, 0, 35)
+SideHeader.BackgroundTransparency = 1
+SideHeader.Parent = SidePanel
+
+local SideTitle = Instance.new("TextLabel")
+SideTitle.Size = UDim2.new(1, -40, 1, 0)
+SideTitle.Position = UDim2.fromOffset(10, 0)
+SideTitle.BackgroundTransparency = 1
+SideTitle.Text = "CATEGORÍAS"
+SideTitle.Font = Enum.Font.GothamBold
+SideTitle.TextSize = 11
+SideTitle.TextColor3 = Color3.fromRGB(140, 160, 185)
+TítuloSide.TextXAlignment = Enum.TextXAlignment.Izquierda
+SideTitle.Parent = SideHeader
+
+local AddCategoryBtn = Instance.new("TextButton")
+AddCategoryBtn.Size = UDim2.fromOffset(24, 24)
+AddCategoryBtn.Position = UDim2.new(1, -29, 0.5, -12)
+AddCategoryBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 225)
+AddCategoryBtn.Text = "+"
+AddCategoryBtn.Font = Enum.Font.GothamBold
+AddCategoryBtn.TextSize = 16
+AddCategoryBtn.TextColor3 = Color3.new(1, 1, 1)
+AddCategoryBtn.Parent = SideHeader
+
+cr(AddCategoryBtn, 6)
+
+local CategoryScroll = Instance.new("ScrollingFrame")
+CategoryScroll.Size = UDim2.new(1, -8, 1, -42)
+CategoryScroll.Position = UDim2.fromOffset(4, 38)
+CategoryScroll.BackgroundTransparency = 1
+CategoryScroll.BorderSizePixel = 0
+CategoryScroll.ScrollBarThickness = 2
+CategoryScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 170, 255)
+CategoryScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+CategoryScroll.Parent = SidePanel
+
+local CategoryLayout = Instance.new("UIListLayout")
+CategoryLayout.Padding = UDim.new(0, 5)
+CategoryLayout.Parent = CategoryScroll
+
+--------------------------------------------------
+-- SISTEMA RESPONSIVO DE BOTONES
+--------------------------------------------------
+
+local isCompactMode = false
+
+local function updateResponsiveLayout()
+	if not EditorMode, then return.
+	local currentWidth = Main.AbsoluteSize.X
+
+	if currentWidth < 580 and not está in modo compacto, then
+		isCompactMode = true
+		ActionButtons.Parent = SidePanel
+		ActionButtons.Size = UDim2.new(1, -8, 0, 28)
+		ActionButtons.Position = UDim2.fromOffset(4, 35)
+
+		CategoryScroll.Position = UDim2.fromOffset(4, 68)
+		CategoryScroll.Size = UDim2.new(1, -8, 1, -72)
+
+		ExecBtn.Size = UDim2.new(0.32, -2, 1, 0)
+		ExecBtn.Position = UDim2.new(0, 0, 0, 0)
+		ExecBtn.TextSize = 10
+
+		ViewBtn.Size = UDim2.new(0.32, -2, 1, 0)
+		ViewBtn.Position = UDim2.new(0.34, 0, 0, 0)
+		ViewBtn.TextSize = 10
+
+		CopyBtn.Size = UDim2.new(0.32, -2, 1, 0)
+		CopyBtn.Position = UDim2.new(0.68, 0, 0, 0)
+		CopyBtn.TextSize = 10
+
+	elseif currentWidth >= 580 and isCompactMode then
+		isCompactMode = false
+		ActionButtons.Parent = Top
+		ActionButtons.Size = UDim2.new(1, -100, 1, 0)
+		ActionButtons.Position = UDim2.new(0, 0, 0, 0)
+
+		CategoryScroll.Position = UDim2.fromOffset(4, 38)
+		CategoryScroll.Size = UDim2.new(1, -8, 1, -42)
+
+		ExecBtn.Size = UDim2.fromOffset(100, 28)
+		ExecBtn.Position = UDim2.new(1, -369, 0, 10)
+		ExecBtn.TextSize = 12
+
+		ViewBtn.Size = UDim2.fromOffset(85, 28)
+		ViewBtn.Position = UDim2.new(1, -261, 0, 10)
+		ViewBtn.TextSize = 12
+
+		CopyBtn.Size = UDim2.fromOffset(80, 28)
+		CopyBtn.Position = UDim2.new(1, -170, 0, 10)
+		CopyBtn.TextSize = 12
+	end
+end
+
+Main:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateResponsiveLayout)
+
+--------------------------------------------------
+-- BIENVENIDA
+--------------------------------------------------
+
+local WelcomePanel = Instance.new("Frame")
+WelcomePanel.Size = UDim2.new(1, -8, 0, 112)
+WelcomePanel.Position = UDim2.fromOffset(4, 0)
+WelcomePanel.BackgroundColor3 = Color3.fromRGB(9, 13, 21)
+WelcomePanel.Parent = CategoryScroll
+
+cr(WelcomePanel, 8)
+st(WelcomePanel, Color3.fromRGB(0, 120, 225), 1)
+
+local Avatar = Instance.new("ImageLabel")
+Avatar.Size = UDim2.fromOffset(58, 58)
+Avatar.Position = UDim2.fromOffset(8, 8)
+Avatar.BackgroundColor3 = Color3.fromRGB(5, 8, 14)
+Avatar.Parent = WelcomePanel
+
+cr(Avatar, 29)
+st(Avatar, Color3.fromRGB(0, 180, 255), 2)
+
+local avatarSuccess, avatarImage = pcall(function()
+	return Players:GetUserThumbnailAsync(
+		Player.UserId,
+		Enum.ThumbnailType.HeadShot,
+		Enum.ThumbnailSize.Size100x100
+	)
+end)
+
+if avatarSuccess and avatarImage then
+	Avatar.Image = avatarImage
+end
+
+local WelcomeText = Instance.new("TextLabel")
+WelcomeText.Size = UDim2.new(1, -78, 0, 38)
+WelcomeText.Position = UDim2.fromOffset(74, 8)
+WelcomeText.BackgroundTransparency = 1
+WelcomeText.Text = 'Bienvenido "' .. Player.Nombre .. '"'
+WelcomeText.Font = Enum.Font.GothamBold
+WelcomeText.TextSize = 12
+WelcomeText.TextColor3 = Color3.new(1, 1, 1)
+WelcomeText.TextWrapped = true
+WelcomeText.TextXAlignment = Enum.TextXAlignment.Left
+WelcomeText.TextYAlignment = Enum.TextYAlignment.Center
+WelcomeText.Parent = WelcomePanel
+
+local DateText = Instance.new("TextLabel")
+DateText.Size = UDim2.new(1, -16, 0, 32)
+DateText.Position = UDim2.fromOffset(8, 72)
+DateText.BackgroundTransparency = 1
+DateText.Font = Enum.Font.Code
+DateText.TextSize = 11
+DateText.TextColor3 = Color3.fromRGB(0, 210, 255)
+TextXAlignment = Enum.TextXAlignment.Izquierda
+DateText.Parent = WelcomePanel
+
+local function UpdateDate()
+	local ahora = os.date("*t")
+	DateText.Text = string.format(
+		"%02d/%02d/%04d %02d:%02d:%02d",
+		ahora.day, ahora.month, ahora.year, ahora.hour, ahora.min, ahora.sec
+	)
+end
+
+updateDate()
+
+task.spawn(function()
+	while GUI.Parent do
+		updateDate()
+		task.wait(1)
+	end
+end)
+
+--------------------------------------------------
+-- CONTENIDO Y BUSCADOR DE BOTONES (CORREGIDO DE Z-INDEX Y ORDEN)
+--------------------------------------------------
+
+local ContentArea = Instance.new("Frame")
+ContentArea.Size = UDim2.new(1, -190, 1, -60)
+ContentArea.Position = UDim2.fromOffset(180, 50)
+ContentArea.BackgroundColor3 = Color3.fromRGB(12, 16, 24)
+ContentArea.BackgroundTransparency = 0.4
+ContentArea.Parent = Main
+
+cr(ContentArea, 8)
+st(ContentArea, Color3.fromRGB(20, 30, 45), 1)
+
+-- 1. PRIMERO CREAMOS EL CONTENEDOR DE OPCIONES (Fondo)
+local OptionContainer = Instance.new("Frame")
+OptionContainer.Size = UDim2.new(1, 0, 1, -35)
+OptionContainer.Position = UDim2.fromOffset(0, 35)
+OptionContainer.BackgroundTransparency = 1
+OptionContainer.Parent = ContentArea
+
+-- 2. DESPUÉS CREAMOS LA CABECERA Y EL BUSCADOR (Al frente para que el dropdown no quede debajo de los botones)
+local ContentHeader = Instance.new("Frame")
+ContentHeader.Size = UDim2.new(1, 0, 0, 35)
+ContentHeader.BackgroundTransparency = 1
+ContentHeader.ZIndex = 200
+ContentHeader.Parent = ContentArea
+
+local CurrentCatTitle = Instance.new("TextLabel")
+CurrentCatTitle.Size = UDim2.new(1, -210, 1, 0)
+CurrentCatTitle.Position = UDim2.fromOffset(10, 0)
+CurrentCatTitle.BackgroundTransparency = 1
+CurrentCatTitle.Text = "Selecciona una categoría"
+CurrentCatTitle.Font = Enum.Font.GothamBold
+CurrentCatTitle.TextSize = 13
+CurrentCatTitle.TextColor3 = Color3.new(1, 1, 1)
+CurrentCatTitle.TextXAlignment = Enum.TextXAlignment.Left
+CurrentCatTitle.Parent = ContentHeader
+
+local SearchBoxFrame = Instance.new("Frame")
+SearchBoxFrame.Size = UDim2.new(0, 160, 0, 26)
+SearchBoxFrame.Position = UDim2.new(1, -198, 0.5, -13)
+SearchBoxFrame.BackgroundColor3 = Color3.fromRGB(8, 12, 19)
+SearchBoxFrame.ZIndex = 500
+SearchBoxFrame.Parent = ContentHeader
+cr(SearchBoxFrame, 6)
+st(SearchBoxFrame, Color3.fromRGB(35, 55, 75), 1)
+
+local SearchIcon = Instance.new("ImageLabel")
+SearchIcon.Size = UDim2.fromOffset(16, 16)
+SearchIcon.Position = UDim2.fromOffset(5, 5)
+SearchIcon.BackgroundTransparency = 1
+SearchIcon.Image = "rbxassetid://6031154871"
+SearchIcon.ImageColor3 = Color3.fromRGB(0, 170, 255)
+SearchIcon.ZIndex = 501
+SearchIcon.Parent = SearchBoxFrame
+
+local SearchInput = Instance.new("TextBox")
+SearchInput.Size = UDim2.new(1, -26, 1, 0)
+SearchInput.Position = UDim2.fromOffset(24, 0)
+SearchInput.BackgroundTransparency = 1
+SearchInput.PlaceholderText = "Buscar..."
+SearchInput.Text = ""
+SearchInput.TextColor3 = Color3.new(1, 1, 1)
+SearchInput.PlaceholderColor3 = Color3.fromRGB(120, 140, 160)
+SearchInput.Font = Enum.Font.Gotham
+SearchInput.TextSize = 11
+SearchInput.TextXAlignment = Enum.TextXAlignment.Left
+SearchInput.ClearTextOnFocus = false
+SearchInput.ZIndex = 501
+SearchInput.Parent = SearchBoxFrame
+
+local SearchResultsScroll = Instance.new("ScrollingFrame")
+SearchResultsScroll.Size = UDim2.new(1, 0, 0, 120)
+SearchResultsScroll.Position = UDim2.new(0, 0, 1, 4)
+SearchResultsScroll.BackgroundColor3 = Color3.fromRGB(14, 18, 26)
+SearchResultsScroll.Visible = false
+SearchResultsScroll.ZIndex = 999
+SearchResultsScroll.BorderSizePixel = 0
+SearchResultsScroll.ScrollBarThickness = 2
+SearchResultsScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+SearchResultsScroll.Parent = SearchBoxFrame
+cr(SearchResultsScroll, 6)
+st(SearchResultsScroll, Color3.fromRGB(0, 170, 255), 1)
+
+local SearchLayout = Instance.new("UIListLayout")
+SearchLayout.Padding = UDim.new(0, 2)
+SearchLayout.Parent = SearchResultsScroll
+
+local AddOptionBtn = Instance.new("TextButton")
+AddOptionBtn.Size = UDim2.fromOffset(24, 24)
+AddOptionBtn.Position = UDim2.new(1, -34, 0.5, -12)
+AddOptionBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+AddOptionBtn.Text = "+"
+AddOptionBtn.Font = Enum.Font.GothamBold
+AddOptionBtn.TextSize = 16
+AddOptionBtn.TextColor3 = Color3.new(1, 1, 1)
+AddOptionBtn.Parent = ContentHeader
+
+cr(AddOptionBtn, 6)
+
+--------------------------------------------------
+-- BOTÓN DE REDIMENSIONAR
+--------------------------------------------------
+
+local ResizeBtn = Instance.new("ImageButton")
+ResizeBtn.Size = UDim2.fromOffset(22, 22)
+ResizeBtn.AnchorPoint = Vector2.new(1, 1)
+ResizeBtn.Position = UDim2.new(1, -6, 1, -6)
+ResizeBtn.BackgroundTransparency = 1
+ResizeBtn.Image = "rbxassetid://10723385202"
+ResizeBtn.ImageColor3 = Color3.fromRGB(0, 170, 255)
+ResizeBtn.ZIndex = 25
+ResizeBtn.Parent = Main
+
+local resizing = false
+local resizeStartPos
+local resizeStartSize
+
+ResizeBtn.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		redimensionamiento = true
+		resizeStartPos = input.Position
+		resizeStartSize = Main.AbsoluteSize
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		local delta = input.Position - resizeStartPos
+		local newX = math.clamp(resizeStartSize.X + delta.X, MIN_SIZE.X, MAX_SIZE.X)
+		local newY = math.clamp(resizeStartSize.Y + delta.Y, MIN_SIZE.Y, MAX_SIZE.Y)
+		Main.Size = UDim2.fromOffset(nuevoX, nuevoY)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		redimensionamiento = false
+	end
+end)
+
+--------------------------------------------------
+-- DATOS Y LOGICA DE BUSQUEDA CON REDIRECCION
+--------------------------------------------------
+
+local categories = {}
+local activeCategory = nil
+local editingCategory = nil
+local editingOption = nil
+
+local function switchCategory(catData)
+	activeCategory = catData
+	CurrentCatTitle.Text = catData.Name
+
+	for _, v in pairs(categories) do
+		v.Scroll.Visible = false
+		v.Btn.BackgroundColor3 = Color3.fromRGB(18, 24, 36)
+	end
+
+	catData.Scroll.Visible = true
+	catData.Btn.BackgroundColor3 = Color3.fromRGB(0, 120, 225)
+end
+
+local function updateSearchResults()
+	for _, child in ipairs(SearchResultsScroll:GetChildren()) do
+		if child:IsA("TextButton") then child:Destroy() end
+	end
+
+	local query = string.lower(SearchInput.Text)
+	if query == "" then
+		SearchResultsScroll.Visible = false
+		return
+	end
+
+	local count = 0
+	for _, cat in ipairs(categories) do
+		for _, opt in ipairs(cat.Options) do
+			if string.find(string.lower(opt.Name), query, 1, true) then
+				count = count + 1
+				local item = Instance.new("TextButton")
+				item.Size = UDim2.new(1, -4, 0, 26)
+				item.BackgroundColor3 = Color3.fromRGB(22, 28, 40)
+				item.Text = " " .. opt.Name .. " (" .. cat.Name .. ")"
+				item.Font = Enum.Font.Gotham
+				item.TextSize = 10
+				item.TextColor3 = Color3.fromRGB(200, 220, 255)
+				item.TextXAlignment = Enum.TextXAlignment.Left
+				item.ZIndex = 1000
+				item.Parent = SearchResultsScroll
+				cr(item, 4)
+
+				item.MouseButton1Click:Connect(function()
+					playClickFeedback()
+					switchCategory(cat)
+					SearchResultsScroll.Visible = false
+					SearchInput.Text = ""
+
+					if opt.Frame then
+						local targetY = math.clamp(opt.Frame.Position.Y.Offset - 10, 0, math.max(0, cat.Scroll.AbsoluteCanvasSize.Y - cat.Scroll.AbsoluteSize.Y))
+						tw(cat.Scroll, 0.3, { CanvasPosition = Vector2.new(0, targetY) })
+
+						local orig = opt.Frame.BackgroundColor3
+						tw(opt.Frame, 0.2, {BackgroundColor3 = Color3.fromRGB(0, 170, 255)})
+						task.delay(0.4, function()
+							tw(opt.Frame, 0.4, {BackgroundColor3 = orig})
+						end)
+					end
+				end)
+			end
+		end
+	end
+
+	SearchResultsScroll.Visible = (count > 0)
+end
+
+SearchInput:GetPropertyChangedSignal("Text"):Connect(updateSearchResults)
+
+--------------------------------------------------
+-- GENERADOR
+--------------------------------------------------
+
+local function GenerarScriptFinal()
+	local scriptCode = GetBaseTemplate()
+
+	for i, cat in ipairs(categories) do
+		scriptCode = scriptCode .. string.format('local cat_%d = createCategory("%s")\n', i, cat.Name)
+
+		for _, opt in ipairs(cat.Options) do
+			local valueCode = opt.ValueEnabled and "true" or "false"
+			local valueDefault = tostring(opt.ValueDefault or 0)
+
+			scriptCode = scriptCode .. string.format(
+				'buildOption("%s", %d, cat_%d.Scroll, [==[\n%s\n]==], %s, %s, cat_%d)\n',
+				opt.Name, opt.TypeId, i, opt.Code, valueCode, valueDefault, i
+			)
+		end
+	end
+
+	scriptCode = scriptCode .. "if categories[1] then switchCategory(categories[1]) end\n"
+	return scriptCode
+end
+
+--------------------------------------------------
+-- MODALES
+--------------------------------------------------
+
+local ModalOverlay = Instance.new("Frame")
+ModalOverlay.Size = UDim2.new(1, 0, 1, 0)
+ModalOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
+ModalOverlay.BackgroundTransparency = 1
+ModalOverlay.Visible = false
+ModalOverlay.ZIndex = 50
+ModalOverlay.Active = true
+ModalOverlay.Parent = Main
+
+local function showModal(panel)
+	if not EditorMode, then return.
+	ModalOverlay.Visible = true
+	panel.Visible = true
+
+	tw(ModalOverlay, 0.3, { BackgroundTransparency = 0.6 })
+
+	panel.Size = UDim2.new(0, 0, 0, 0)
+	tw(panel, 0.3, { Size = panel:GetAttribute("TargetSize") })
+end
+
+local function hideModal(panel)
+	tw(ModalOverlay, 0.2, { BackgroundTransparency = 1 })
+	tw(panel, 0.2, { Size = UDim2.new(0, 0, 0, 0) })
+
+	task.delay(0.2, function()
+		ModalOverlay.Visible = false
+		panel.Visible = false
+	end)
+end
+
+local function createModalPanel(nombre, ancho, alto)
+	local p = Instance.new("Frame")
+	p.Name = name
+	p.AnchorPoint = Vector2.new(0.5, 0.5)
+	p.Position = UDim2.new(0.5, 0, 0.5, 0)
+	p.BackgroundColor3 = Color3.fromRGB(15, 20, 30)
+	p.ClipsDescendants = true
+	p.Visible = false
+	p.ZIndex = 51
+	p.Parent = ModalOverlay
+
+	p:SetAttribute("TargetSize", UDim2.new(0, w, 0, h))
+	cr(p, 10)
+	st(p, Color3.fromRGB(0, 170, 255), 1)
+	return p
+end
+
+--------------------------------------------------
+-- CATEGORÍA MODAL
+--------------------------------------------------
+
+local CatModal = createModalPanel("CatModal", 300, 220)
+local CatModalTitle = Instance.new("TextLabel", CatModal)
+CatModalTitle.Size = UDim2.new(1, 0, 0, 30)
+CatModalTitle.Position = UDim2.fromOffset(0, 10)
+CatModalTitle.BackgroundTransparency = 1
+CatModalTitle.Text = "CATEGORÍA"
+CatModalTitle.Font = Enum.Font.GothamBold
+CatModalTitle.TextColor3 = Color3.new(1, 1, 1)
+
+local CatInput = Instance.new("TextBox", CatModal)
+CatInput.Size = UDim2.new(1, -40, 0, 40)
+CatInput.Position = UDim2.fromOffset(20, 60)
+CatInput.BackgroundColor3 = Color3.fromRGB(10, 14, 22)
+CatInput.TextColor3 = Color3.new(1, 1, 1)
+CatInput.Font = Enum.Font.Gotham
+CatInput.PlaceholderText = "Nombre de la categoría..."
+CatInput.ClearTextOnFocus = false
+cr(CatInput, 6)
+st(CatInput, Color3.fromRGB(40, 50, 70), 1)
+
+local CatSave = Instance.new("TextButton", CatModal)
+CatSave.Size = UDim2.new(0.5, -25, 0, 35)
+CatSave.Position = UDim2.fromOffset(20, 160)
+CatSave.BackgroundColor3 = Color3.fromRGB(0, 120, 225)
+CatSave.Text = "Guardia"
+CatSave.TextColor3 = Color3.new(1, 1, 1)
+CatSave.Font = Enum.Font.GothamBold
+cr(CatSave, 6)
+
+local CatCancel = Instance.new("TextButton", CatModal)
+CatCancel.Size = UDim2.new(0.5, -25, 0, 35)
+CatCancel.Position = UDim2.new(0.5, 5, 0, 160)
+CatCancel.BackgroundColor3 = Color3.fromRGB(40, 15, 20)
+CatCancel.Text = "Cancelar"
+CatCancel.TextColor3 = Color3.fromRGB(255, 100, 100)
+CatCancel.Font = Enum.Font.GothamBold
+cr(CatCancel, 6)
+
+--------------------------------------------------
+-- OPCIÓN MODAL
+--------------------------------------------------
+
+local OptModal = createModalPanel("OptModal", 340, 300)
+local OptModalTitle = Instance.new("TextLabel", OptModal)
+OptModalTitle.Size = UDim2.new(1, 0, 0, 30)
+OptModalTitle.Position = UDim2.fromOffset(0, 10)
+OptModalTitle.BackgroundTransparency = 1
+OptModalTitle.Text = "OPCIÓN"
+OptModalTitle.Font = Enum.Font.GothamBold
+OptModalTitle.TextColor3 = Color3.new(1, 1, 1)
+
+local OptInput = Instance.new("TextBox", OptModal)
+OptInput.Size = UDim2.new(1, -40, 0, 35)
+OptInput.Position = UDim2.fromOffset(20, 45)
+OptInput.BackgroundColor3 = Color3.fromRGB(10, 14, 22)
+OptInput.TextColor3 = Color3.new(1, 1, 1)
+OptInput.Font = Enum.Font.Gotham
+OptInput.PlaceholderText = "Nombre de la opción..."
+OptInput.ClearTextOnFocus = false
+cr(OptInput, 6)
+st(OptInput, Color3.fromRGB(40, 50, 70), 1)
+
+local TypeLabel = Instance.new("TextLabel", OptModal)
+TypeLabel.Size = UDim2.new(1, 0, 0, 20)
+TypeLabel.Position = UDim2.fromOffset(0, 85)
+TypeLabel.BackgroundTransparency = 1
+TypeLabel.Text = "Tipo de Activador:"
+TypeLabel.Font = Enum.Font.Gotham
+TypeLabel.TextColor3 = Color3.fromRGB(150, 170, 200)
+
+local optType = 1
+
+local Type1 = Instance.new("TextButton", OptModal)
+Tipo1.Size = UDim2.new(0.28, 0, 0, 28)
+Tipo1.Position = UDim2.fromOffset(20, 110)
+Tipo1.Text = "Palanca"
+Type1.Font = Enum.Font.GothamBold
+Tipo1.TextSize = 11
+cr(Tipo1, 6)
+
+local Type2 = Instance.new("TextButton", OptModal)
+Tipo2.Size = UDim2.new(0.28, 0, 0, 28)
+Type2.Position = UDim2.new(0.33, 10, 0, 110)
+Type2.Text = "Clic"
+Type2.Font = Enum.Font.GothamBold
+Tipo2.TextSize = 11
+cr(Tipo2, 6)
+
+local Type3 = Instance.new("TextButton", OptModal)
+Tipo3.Size = UDim2.new(0.28, 0, 0, 28)
+Tipo3.Position = UDim2.new(0.66, 0, 0, 110)
+Type3.Text = "Alternar"
+Type3.Font = Enum.Font.GothamBold
+Type3.TextSize = 11
+cr(Tipo3, 6)
+
+local function updateTypeUI()
+	Type1.BackgroundColor3 = optType == 1 and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(20, 25, 35)
+	Type2.BackgroundColor3 = optType == 2 and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(20, 25, 35)
+	Type3.BackgroundColor3 = optType == 3 and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(20, 25, 35)
+end
+
+Type1.MouseButton1Click:Connect(function() playClickFeedback() optType = 1 updateTypeUI() end)
+Type2.MouseButton1Click:Connect(function() playClickFeedback() optType = 2 updateTypeUI() end)
+Type3.MouseButton1Click:Connect(function() playClickFeedback() optType = 3 updateTypeUI() end)
+
+--------------------------------------------------
+-- VALOR
+--------------------------------------------------
+
+local ValueLabel = Instance.new("TextLabel", OptModal)
+ValueLabel.Size = UDim2.new(1, -100, 0, 30)
+ValueLabel.Position = UDim2.fromOffset(20, 138)
+ValueLabel.BackgroundTransparency = 1
+ValueLabel.Text = "Activar cuadro de texto de valor de función"
+ValueLabel.Font = Enum.Font.Gotham
+ValueLabel.TextSize = 10
+ValueLabel.TextColor3 = Color3.fromRGB(190, 200, 215)
+ValueLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local ValueToggleBG = Instance.new("Frame", OptModal)
+ValorToggleBG.Size = UDim2.fromOffset(42, 21)
+ValorToggleBG.Position = UDim2.new(1, -62, 0, 142)
+ValueToggleBG.BackgroundColor3 = Color3.fromRGB(30, 40, 50)
+cr(ValueToggleBG, 10)
+
+local ValueToggleCircle = Instance.new("Frame", ValueToggleBG)
+ValueToggleCircle.Size = UDim2.fromOffset(17, 17)
+ValueToggleCircle.Position = UDim2.fromOffset(2, 2)
+ValueToggleCircle.BackgroundColor3 = Color3.new(1, 1, 1)
+cr(ValueToggleCircle, 10)
+
+local valueEnabled = false
+
+local ValueButton = Instance.new("TextButton", OptModal)
+ValueButton.Size = UDim2.new(1, -40, 0, 35)
+ValueButton.Position = UDim2.fromOffset(20, 136)
+ValueButton.BackgroundTransparency = 1
+ValueButton.Text = ""
+ValueButton.AutoButtonColor = false
+ValueButton.ZIndex = 60
+
+local ValueInput = Instance.new("TextBox", OptModal)
+ValueInput.Size = UDim2.new(1, -40, 0, 35)
+ValueInput.Position = UDim2.fromOffset(20, 172)
+ValueInput.BackgroundColor3 = Color3.fromRGB(10, 14, 22)
+ValorInput.TextColor3 = Color3.fromRGB(0, 220, 255)
+ValueInput.Font = Enum.Font.Code
+ValueInput.TextSize = 12
+ValueInput.PlaceholderText = "Valor inicial..."
+ValueInput.Text = "16"
+ValueInput.ClearTextOnFocus = false
+ValueInput.Visible = false
+ValueInput.ZIndex = 59
+cr(ValorEntrada, 6)
+st(ValueInput, Color3.fromRGB(40, 50, 70), 1)
+
+local function updateValueUI()
+	tw(ValueToggleBG, 0.25, {
+		BackgroundColor3 = valueEnabled and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(30, 40, 50)
+	})
+	tw(ValueToggleCircle, 0.25, {
+		Position = valueEnabled and UDim2.new(1, -19, 0, 2) or UDim2.fromOffset(2, 2)
+	})
+	ValueInput.Visible = valueEnabled
+end
+
+ValueButton.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	valueEnabled = not valueEnabled
+	actualizarValueUI()
+end)
+
+--------------------------------------------------
+-- CÓDIGO
+--------------------------------------------------
+
+local CodeInput = Instance.new("TextBox", OptModal)
+CodeInput.Size = UDim2.new(1, -40, 0, 72)
+CodeInput.Position = UDim2.fromOffset(20, 205)
+CodeInput.BackgroundColor3 = Color3.fromRGB(10, 14, 22)
+CodeInput.TextColor3 = Color3.fromRGB(0, 220, 255)
+CodeInput.Font = Enum.Font.Code
+CodeInput.TextSize = 10
+CodeInput.PlaceholderText = "-- Código Lua a ejecutar..."
+CodeInput.Text = "local char = Player.Character\nif char and char:FindFirstChild('Humanoid') then\n\tif state then\n\t\tchar.Humanoid.WalkSpeed ​​= value\n\telse\n\t\tchar.Humanoid.WalkSpeed ​​= 16\n\tend\nend"
+CodeInput.ClearTextOnFocus = false
+CodeInput.Multilínea = true
+CodeInput.TextXAlignment = Enum.TextXAlignment.Left
+CodeInput.TextYAlignment = Enum.TextYAlignment.Top
+CodeInput.ZIndex = 55
+cr(CodeInput, 6)
+st(CodeInput, Color3.fromRGB(40, 50, 70), 1)
+
+local OptSave = Instance.new("TextButton", OptModal)
+OptSave.Size = UDim2.new(0.5, -25, 0, 35)
+OptSave.Position = UDim2.fromOffset(20, 260)
+OptSave.BackgroundColor3 = Color3.fromRGB(0, 120, 225)
+OptSave.Text = "Guardar"
+OptSave.TextColor3 = Color3.new(1, 1, 1)
+OptSave.Font = Enum.Font.GothamBold
+cr(OptSave, 6)
+
+local OptCancel = Instance.new("TextButton", OptModal)
+OptCancel.Size = UDim2.new(0.5, -25, 0, 35)
+OptCancel.Position = UDim2.new(0.5, 5, 0, 260)
+OptCancel.BackgroundColor3 = Color3.fromRGB(40, 15, 20)
+OptCancel.Text = "Cancelar"
+OptCancel.TextColor3 = Color3.fromRGB(255, 100, 100)
+OptCancel.Font = Enum.Font.GothamBold
+cr(OptCancel, 6)
+
+--------------------------------------------------
+-- MODAL DE SCRIPT
+--------------------------------------------------
+
+local ScriptModal = createModalPanel("ScriptModal", 400, 320)
+local ScriptModalTitle = Instance.new("TextLabel", ScriptModal)
+ScriptModalTitle.Size = UDim2.new(1, 0, 0, 30)
+ScriptModalTitle.Position = UDim2.fromOffset(0, 10)
+ScriptModalTitle.BackgroundTransparency = 1
+ScriptModalTitle.Text = "SÓLO LECTURA - GUIÓN GENERADO"
+ScriptModalTitle.Font = Enum.Font.GothamBold
+ScriptModalTitle.TextColor3 = Color3.new(1, 1, 1)
+
+local ScriptBox = Instance.new("TextBox", ScriptModal)
+ScriptBox.Size = UDim2.new(1, -40, 1, -110)
+ScriptBox.Position = UDim2.fromOffset(20, 50)
+ScriptBox.BackgroundColor3 = Color3.fromRGB(10, 14, 22)
+ScriptBox.TextColor3 = Color3.fromRGB(180, 200, 220)
+ScriptBox.Font = Enum.Font.Code
+ScriptBox.TextSize = 9
+ScriptBox.TextXAlignment = Enum.TextXAlignment.Left
+ScriptBox.TextYAlignment = Enum.TextYAlignment.Top
+ScriptBox.ClearTextOnFocus = false
+ScriptBox.MultiLine = true
+ScriptBox.TextEditable = false
+cr(ScriptBox, 6)
+st(ScriptBox, Color3.fromRGB(40, 50, 70), 1)
+
+local ScriptCloseBtn = Instance.new("TextButton", ScriptModal)
+ScriptCloseBtn.Size = UDim2.new(1, -40, 0, 35)
+ScriptCloseBtn.Position = UDim2.new(0, 20, 1, -45)
+ScriptCloseBtn.BackgroundColor3 = Color3.fromRGB(40, 15, 20)
+ScriptCloseBtn.Text = "Cerrar"
+ScriptCloseBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+ScriptCloseBtn.Font = Enum.Font.GothamBold
+cr(ScriptCloseBtn, 6)
+
+--------------------------------------------------
+-- EJECUCIÓN DE CONSOLA LOCAL
+--------------------------------------------------
+
+local function ejecutarCodigoConsola(codigo, estado, valor)
+	if not codigo or string.match(codigo, "^%s*$") then
+		return
+	end
+
+	local envHeader = string.format(
+		"local state = %s\nlocal estado = %s\nlocal value = %s\nlocal valor = %s\nlocal Player = game:GetService('Players').LocalPlayer\nlocal Players = game:GetService('Players')",
+		tostring(estado or false),
+		tostring(estado or false),
+		tostring(valor or 0),
+		tostring(valor or 0)
+	)
+
+	local func, err = loadstring(envHeader .. "\n" .. codigo)
+
+	if func then
+		task.spawn(func)
+	else
+		advertir("[Error en el script]:", err)
+	end
+end
+
+--------------------------------------------------
+-- EDITOR DE OPCIONES DE COMPILACIÓN
+--------------------------------------------------
+
+local function buildOption(
+	nombre,
+	tipoId,
+	desplazamiento padre,
+	code,
+	optionDataRef,
+	valueEnabledRef,
+	valorDefaultRef
+)
+	local optionData = optionDataRef or {}
+	optionData.Name = nombre
+	optionData.TypeId = typeId or 1
+	optionData.Code = code or ""
+	optionData.ValueEnabled = valueEnabledRef == true
+	optionData.ValueDefault = tonumber(valueDefaultRef) or 0
+
+	if not optionDataRef and activeCategory then
+		tabla.insertar(activeCategory.Opciones, datosOpción)
+	end
+
+	local cont = Instance.new("Frame")
+	cont.Size = UDim2.new(1, -10, 0, 38)
+	cont.BackgroundColor3 = Color3.fromRGB(18, 24, 34)
+	cont.Parent = parentScroll
+
+	cr(cont, 6)
+	local stroke = st(cont, Color3.fromRGB(30, 40, 50), 1)
+	optionData.Frame = cont
+
+	local ActionMenu = Instance.new("Frame", cont)
+	ActionMenu.Size = UDim2.new(1, 0, 1, 0)
+	ActionMenu.BackgroundColor3 = Color3.fromRGB(25, 12, 18)
+	ActionMenu.Visible = false
+	ActionMenu.ZIndex = 10
+	cr(MenúAcción, 6)
+
+	local DelBtn = Instance.new("TextButton", ActionMenu)
+	DelBtn.Size = UDim2.new(0.5, -6, 1, -8)
+	DelBtn.Position = UDim2.fromOffset(4, 4)
+	DelBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+	DelBtn.Text = "Eliminar"
+	DelBtn.Font = Enum.Font.GothamBold
+	DelBtn.TextColor3 = Color3.new(1, 1, 1)
+	DelBtn.TextSize = 11
+	cr(DelBtn, 4)
+
+	local EditOptBtn = Instance.new("TextButton", ActionMenu)
+	EditOptBtn.Size = UDim2.new(0.5, -6, 1, -8)
+	EditOptBtn.Position = UDim2.new(0.5, 2, 0, 4)
+	EditOptBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 225)
+	EditOptBtn.Text = "Editar"
+	EditOptBtn.Font = Enum.Font.GothamBold
+	EditOptBtn.TextColor3 = Color3.new(1, 1, 1)
+	EditOptBtn.TextSize = 11
+	cr(EditOptBtn, 4)
+
+	DelBtn.MouseButton1Click:Connect(function()
+		playClickFeedback()
+		if activeCategory then
+			for i, v in ipairs(activeCategory.Options) do
+				if v == optionData then
+					tabla.eliminar(activeCategory.Options, i)
+					romper
+				end
+			end
+		end
+		if optionData.ValueFrame then
+			optionData.ValueFrame:Destroy()
+		end
+		cont:Destroy()
+	end)
+
+	local mainBtn = Instance.new("TextButton", cont)
+	mainBtn.Size = UDim2.new(1, 0, 1, 0)
+	mainBtn.BackgroundTransparency = 1
+	mainBtn.Text = ""
+
+	local estado = false
+
+	if optionData.TypeId == 1 then
+		local lbl = Instance.new("TextLabel", cont)
+		lbl.Size = UDim2.new(1, -60, 1, 0)
+		lbl.Position = UDim2.fromOffset(10, 0)
+		lbl.BackgroundTransparency = 1
+		lbl.Text = nombre
+		lbl.Font = Enum.Font.Gotham
+		lbl.TextColor3 = Color3.new(1, 1, 1)
+		lbl.TextXAlignment = Enum.TextXAlignment.Left
+
+		local bg = Instance.new("Frame", cont)
+		bg.Size = UDim2.new(0, 40, 0, 20)
+		bg.Position = UDim2.new(1, -48, 0.5, -10)
+		bg.BackgroundColor3 = Color3.fromRGB(30, 40, 50)
+		cr(bg, 10)
+
+		local circle = Instance.new("Frame", bg)
+		circle.Size = UDim2.new(0, 16, 0, 16)
+		circle.Position = UDim2.new(0, 2, 0.5, -8)
+		circle.BackgroundColor3 = Color3.new(1, 1, 1)
+		cr(circle, 8)
+
+		optionData.OnTrigger = function(newState)
+			estado = nuevoEstado
+			tw(bg, 0.3, {
+				BackgroundColor3 = estado and Color3.fromRGB(0, 170, 255) or Color3.fromRGB(30, 40, 50)
+			})
+			tw(circle, 0.3, {
+				Position = estado and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8)
+			})
+			ejecutarCodigoConsola(optionData.Code, state, optionData.ValueDefault)
+		end
+	elseif optionData.TypeId == 2 then
+		local lbl = Instance.new("TextLabel", cont)
+		lbl.Size = UDim2.new(1, -20, 1, 0)
+		lbl.Position = UDim2.fromOffset(10, 0)
+		lbl.BackgroundTransparency = 1
+		lbl.Text = "▶ " .. nombre
+		lbl.Font = Enum.Font.Gotham
+		lbl.TextColor3 = Color3.new(1, 1, 1)
+		lbl.TextXAlignment = Enum.TextXAlignment.Left
+
+		optionData.OnTrigger = function()
+			cont.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+			tw(cont, 0.4, { BackgroundColor3 = Color3.fromRGB(18, 24, 34) })
+			ejecutarCodigoConsola(optionData.Code, true, optionData.ValueDefault)
+		end
+	elseif optionData.TypeId == 3 then
+		local lbl = Instance.new("TextLabel", cont)
+		lbl.Size = UDim2.new(1, -20, 1, 0)
+		lbl.Position = UDim2.fromOffset(10, 0)
+		lbl.BackgroundTransparency = 1
+		lbl.Text = "[OFF] " .. nombre
+		lbl.Font = Enum.Font.Gotham
+		lbl.TextColor3 = Color3.fromRGB(150, 160, 175)
+		lbl.TextXAlignment = Enum.TextXAlignment.Left
+
+		optionData.OnTrigger = function(newState)
+			estado = nuevoEstado
+			if estado then
+				lbl.Text = "[ON] " .. nombre
+				lbl.TextColor3 = Color3.fromRGB(0, 220, 255)
+				cont.BackgroundColor3 = Color3.fromRGB(24, 38, 55)
+			else
+				lbl.Text = "[OFF] " .. nombre
+				lbl.TextColor3 = Color3.fromRGB(150, 160, 175)
+				cont.BackgroundColor3 = Color3.fromRGB(18, 24, 34)
+			end
+			ejecutarCodigoConsola(optionData.Code, state, optionData.ValueDefault)
+		end
+	end
+
+	if optionData.ValueEnabled then
+		local valueFrame = Instance.new("Frame")
+		valueFrame.Size = UDim2.new(1, -10, 0, 38)
+		valueFrame.BackgroundColor3 = Color3.fromRGB(14, 20, 29)
+		valueFrame.Parent = parentScroll
+		cr(valueFrame, 6)
+		st(valueFrame, Color3.fromRGB(0, 120, 225), 1)
+
+		local valueLabel = Instance.new("TextLabel")
+		valueLabel.Size = UDim2.new(0.45, -10, 1, 0)
+		valueLabel.Position = UDim2.fromOffset(10, 0)
+		valueLabel.BackgroundTransparency = 1
+		valueLabel.Text = "Valor"
+		valueLabel.Font = Enum.Font.GothamBold
+		valueLabel.TextSize = 11
+		valueLabel.TextColor3 = Color3.fromRGB(0, 190, 255)
+		valueLabel.TextXAlignment = Enum.TextXAlignment.Left
+		valueLabel.Parent = valueFrame
+
+		local valueInput = Instance.new("TextBox")
+		valueInput.Size = UDim2.new(0.55, -16, 0, 28)
+		valueInput.Position = UDim2.new(0.45, 2, 0.5, -14)
+		valueInput.BackgroundColor3 = Color3.fromRGB(8, 12, 19)
+		valueInput.TextColor3 = Color3.fromRGB(0, 220, 255)
+		valueInput.Font = Enum.Font.Code
+		valueInput.TextSize = 12
+		valueInput.Text = tostring(optionData.ValueDefault)
+		valueInput.PlaceholderText = "Valor"
+		valueInput.ClearTextOnFocus = false
+		valueInput.Parent = valueFrame
+		cr(valorEntrada, 5)
+		st(valueInput, Color3.fromRGB(35, 55, 75), 1)
+
+		valorInput.FocusLost:Connect(function()
+			local n = tonumber(valueInput.Text)
+			if n ~= nil then
+				optionData.ValueDefault = n
+				valorInput.Text = tostring(n)
+			else
+				valueInput.Text = tostring(optionData.ValueDefault or 0)
+			end
+		end)
+
+		optionData.ValueFrame = valueFrame
+		optionData.ValueInput = valueInput
+	end
+
+	local pressStart = 0
+	local isPressing = false
+	local touchStartPos = nil
+
+	mainBtn.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			touchStartPos = input.Position
+			if EditorMode then
+				isPressing = true
+				pressStart = os.clock()
+				task.delay(1, function())
+					if isPressing and os.clock() - pressStart >= 0.9 then
+						playClickFeedback()
+						trazo.Color = Color3.fromRGB(255, 60, 60)
+						ActionMenu.Visible = true
+					end
+				end)
+			end
+		end
+	end)
+
+	mainBtn.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			if touchStartPos then
+				local delta = (input.Position - touchStartPos).Magnitude
+				if delta >= 15 then
+					isPressing = false
+					touchStartPos = nil
+					return
+				end
+			end
+
+			if EditorMode then
+				if está presionando then
+					local duration = os.clock() - pressStart
+					isPressing = false
+					if duration < 1 then
+						if ActionMenu.Visible then
+							playClickFeedback()
+							ActionMenu.Visible = false
+							trazo.Color = Color3.fromRGB(30, 40, 50)
+						else
+							playClickFeedback()
+							estado = not estado
+							if optionData.OnTrigger then
+								optionData.OnTrigger(estado)
+							end
+						end
+					end
+				end
+			else
+				playClickFeedback()
+				estado = not estado
+				if optionData.OnTrigger then
+					optionData.OnTrigger(estado)
+				end
+			end
+			touchStartPos = nil
+		end
+	end)
+
+	EditOptBtn.MouseButton1Click:Connect(function()
+		playClickFeedback()
+		ActionMenu.Visible = false
+		trazo.Color = Color3.fromRGB(30, 40, 50)
+		editingOption = optionData
+		OptInput.Text = optionData.Name
+		CodeInput.Text = optionData.Code
+		optType = optionData.TypeId
+		valueEnabled = optionData.ValueEnabled
+		ValueInput.Text = tostring(optionData.ValueDefault)
+		actualizarTypeUI()
+		actualizarValueUI()
+		mostrarModal(OptModal)
+	end)
+end
+
+--------------------------------------------------
+-- CATEGORÍAS
+--------------------------------------------------
+
+local function createCategory(nombre)
+	local CatFrame = Instance.new("Frame")
+	CatFrame.Size = UDim2.new(1, 0, 0, 32)
+	CatFrame.BackgroundColor3 = Color3.fromRGB(18, 24, 36)
+	CatFrame.Parent = CategoryScroll
+	cr(CatFrame, 6)
+
+	local Btn = Instance.new("TextButton", CatFrame)
+	Btn.Size = EditorMode and UDim2.new(1, -30, 1, 0) or UDim2.new(1, 0, 1, 0)
+	Btn.BackgroundTransparency = 1
+	Btn.Text = " " .. nombre
+	Btn.Font = Enum.Font.Gotham
+	Btn.TextSize = 11
+	Btn.TextColor3 = Color3.fromRGB(180, 195, 215)
+	Btn.TextXAlignment = Enum.TextXAlignment.Left
+
+	local EditCat = Instance.new("TextButton", CatFrame)
+	EditCat.Size = UDim2.fromOffset(24, 24)
+	EditCat.Position = UDim2.new(1, -26, 0.5, -12)
+	EditCat.BackgroundColor3 = Color3.fromRGB(30, 40, 55)
+	EditCat.Text = "E"
+	EditCat.Font = Enum.Font.GothamBold
+	EditCat.TextSize = 11
+	EditCat.TextColor3 = Color3.new(1, 1, 1)
+	EditCat.Visible = EditorMode
+	cr(EditCat, 6)
+
+	local Scroll = Instance.new("ScrollingFrame")
+	Scroll.Size = UDim2.new(1, -12, 1, -10)
+	Scroll.Position = UDim2.fromOffset(6, 5)
+	ScrollingFrame.BackgroundTransparency = 1
+	ScrollingFrame.BorderSizePixel = 0
+	Scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	ScrollingFrame.Visible = false
+	Scroll.Parent = OptionContainer
+
+	local Layout = Instance.new("UIListLayout", ScrollingFrame)
+	Layout.Padding = UDim.new(0, 6)
+
+	local catData = {
+		Name = name,
+		Btn = CatFrame,
+		ScrollingFrame = ScrollingFrame,
+		Etiqueta = Botón,
+		EditBtn = EditCat,
+		Opciones = {}
+	}
+
+	tabla.insertar(categories, catData)
+
+	Btn.MouseButton1Click:Connect(function()
+		playClickFeedback()
+		switchCategory(catData)
+	end)
+
+	EditCat.MouseButton1Click:Connect(function()
+		playClickFeedback()
+		editingCategory = catData
+		CatInput.Text = catData.Name
+		mostrarModal(GatoModal)
+	end)
+
+	switchCategory(catData)
+	return catData
+end
+
+--------------------------------------------------
+-- EVENTOS BOTONES PRINCIPALES
+--------------------------------------------------
+
+ViewBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	ScriptBox.Text = GenerarScriptFinal()
+	mostrarModal(ScriptModal)
+end)
+
+ScriptCloseBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	hideModal(ScriptModal)
+end)
+
+CopyBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	pcall(function()
+		if setclipboard then
+			establecer_portapapeles(Generar_Script_Final())
+			CopyBtn.Text = "Copiado"
+			CopyBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+			task.delay(1.5, function()
+				CopyBtn.Text = "Copiar"
+				CopyBtn.BackgroundColor3 = Color3.fromRGB(15, 22, 35)
+			end)
+		else
+			CopyBtn.Text = "Error"
+			CopyBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+			task.delay(1.5, function()
+				CopyBtn.Text = "Copiar"
+				CopyBtn.BackgroundColor3 = Color3.fromRGB(15, 22, 35)
+			end)
+		end
+	end)
+end)
+
+AddCategoryBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	editingCategory = nil
+	CatInput.Text = ""
+	mostrarModal(GatoModal)
+end)
+
+CatCancel.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	hideModal(GatoModal)
+end)
+
+CatSave.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	if CatInput.Text ~= "" then
+		if editandoCategoría then
+			editingCategory.Name = CatInput.Text
+			editingCategory.Label.Text = " " .. CatInput.Text
+			if activeCategory == editingCategory then
+				CurrentCatTitle.Text = CatInput.Text
+			end
+		else
+			createCategory(CatInput.Text)
+		end
+		hideModal(GatoModal)
+	end
+end)
+
+AddOptionBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	if not activeCategory, then return.
+	editingOption = nil
+	OptInput.Text = ""
+	CodeInput.Text = "local char = Player.Character\nif char and char:FindFirstChild('Humanoid') then\n\tif state then\n\t\tchar.Humanoid.WalkSpeed ​​= value\n\telse\n\t\tchar.Humanoid.WalkSpeed ​​= 16\n\tend\nend"
+	optType = 1
+	valueEnabled = false
+	ValueInput.Text = "16"
+	actualizarTypeUI()
+	actualizarValueUI()
+	mostrarModal(OptModal)
+end)
+
+OptCancel.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	hideModal(OptModal)
+end)
+
+OptSave.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	if OptInput.Text ~= "" and activeCategory then
+		local defaultValue = tonumber(ValueInput.Text) or 0
+
+		if editingOption then
+			editingOption.Name = OptInput.Text
+			editingOption.Code = CodeInput.Text
+			editingOption.TypeId = optType
+			editingOption.ValueEnabled = valueEnabled
+			editingOption.ValueDefault = defaultValue
+
+			if editingOption.ValueFrame then
+				editingOption.ValueFrame:Destroy()
+				editingOption.ValueFrame = nil
+			end
+			if editingOption.Frame then
+				editingOption.Frame:Destroy()
+			end
+
+			buildOption(
+				OptInput.Text, optType, activeCategory.Scroll,
+				CodeInput.Text, editingOption, valueEnabled, defaultValue
+			)
+		else
+			buildOption(
+				OptInput.Text, optType, activeCategory.Scroll,
+				CodeInput.Text, nil, valueEnabled, defaultValue
+			)
+		end
+
+		hideModal(OptModal)
+	end
+end)
+
+--------------------------------------------------
+-- EJECUTAR (CAMBIAR A MODO PRUEBA / MENÚ)
+--------------------------------------------------
+
+ExecBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	if not EditorMode, then return.
+
+	tw(ExecBtn, 0.1, { BackgroundColor3 = Color3.fromRGB(255, 255, 255) })
+	task.delay(0.1, function()
+		tw(ExecBtn, 0.2, { BackgroundColor3 = Color3.fromRGB(20, 160, 70) })
+	end)
+
+	EditorMode = false
+
+	tw(Main, 0.3, { Size = UDim2.new(0, 0, 0, 0) })
+	task.wait(0.3)
+
+	if ActionButtons, then ActionButtons.Visible = false.
+	if AddCategoryBtn es true, then AddCategoryBtn.Visible es false.
+	if AddOptionBtn existe, then AddOptionBtn.Visible = false.
+	if ReturnEditorBtn then ReturnEditorBtn.Visible = true
+
+	for _, cat in ipairs(categories) do
+		if cat.EditBtn then cat.EditBtn.Visible = false
+		if cat.Label, then cat.Label.Size = UDim2.new(1, 0, 1, 0) end
+	end
+
+	Title.Text = "OAH | MENÚ DE GUIÓN"
+	Title.TextColor3 = Color3.fromRGB(0, 220, 255)
+
+	tw(Main, 0.4, { Size = expandedSize })
+end)
+
+--------------------------------------------------
+-- VOLVER A EDITAR (CAMBIAR A MODO EDITOR)
+--------------------------------------------------
+
+ReturnEditorBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	if EditorMode then return end
+
+	tw(ReturnEditorBtn, 0.1, { BackgroundColor3 = Color3.fromRGB(255, 255, 255) })
+	task.delay(0.1, function()
+		tw(ReturnEditorBtn, 0.2, { BackgroundColor3 = Color3.fromRGB(0, 120, 225) })
+	end)
+
+	EditorMode = true
+
+	tw(Main, 0.3, { Size = UDim2.new(0, 0, 0, 0) })
+	task.wait(0.3)
+
+	if ActionButtons existe, then ActionButtons.Visible = true.
+	if AddCategoryBtn es true, then AddCategoryBtn.Visible es true.
+	if AddOptionBtn es true, then AddOptionBtn.Visible es true.
+	if ReturnEditorBtn es true, then ReturnEditorBtn.Visible es false.
+
+	for _, cat in ipairs(categories) do
+		if cat.EditBtn then cat.EditBtn.Visible = true
+		if cat.Label, then cat.Label.Size = UDim2.new(1, -30, 1, 0)
+	end
+
+	Title.Text = "OAH | CREADOR DE GUIONES"
+	Title.TextColor3 = Color3.new(1, 1, 1)
+
+	updateResponsiveLayout()
+	tw(Main, 0.4, { Size = expandedSize })
+end)
+
+--------------------------------------------------
+-- ARRASTRO
+--------------------------------------------------
+
+local dragging
+local dragStart
+local startPos
+
+Top.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch
+		o input.UserInputType == Enum.UserInputType.MouseButton1 then
+		arrastrando = true
+		dragStart = input.Position
+		startPos = Main.Position
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if arrastra and (
+		input.UserInputType == Enum.UserInputType.Touch
+		o input.UserInputType == Enum.UserInputType.MouseMovement
+	) then
+		local delta = input.Position - dragStart
+		local vs = workspace.CurrentCamera.ViewportSize
+		local hw = Main.AbsoluteSize.X / 2
+		local curX = startPos.X.Offset
+		local curY = startPos.Y.Offset
+
+		local newX = math.clamp(curX + delta.X, hw, vs.X - hw)
+		local nuevoY = math.clamp(curY + delta.Y, 0, vs.Y - 50)
+
+		Main.Position = UDim2.new(0, nuevoX, 0, nuevoY)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch
+		o input.UserInputType == Enum.UserInputType.MouseButton1 then
+		arrastrando = false
+	end
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	tw(Main, 0.3, { Size = UDim2.new(0, 0, 0, 0) })
+	task.delay(0.3, function()
+		GUI:Destroy()
+	end)
+end)
+
+--------------------------------------------------
+-- MINIMIZAR
+--------------------------------------------------
+
+local minimized = false
+
+MinBtn.MouseButton1Click:Connect(function()
+	playClickFeedback()
+	minimizado = not minimizado
+
+	if se minimiza then
+		MinBtn.Text = "+"
+		SidePanel.Visible = false
+		ContentArea.Visible = false
+		ResizeBtn.Visible = false
+
+		if ActionButtons then
+			ActionButtons.Visible = false
+		end
+
+		tw(Main, 0.3, { Size = minimizedSize })
+	else
+		MinBtn.Text = "-"
+		tw(Main, 0.3, { Size = expandedSize })
+
+		task.delay(0.2, function()
+			if not minimized then
+				SidePanel.Visible = true
+				ContentArea.Visible = true
+				ResizeBtn.Visible = true
+
+				if EditorMode and ActionButtons then
+					ActionButtons.Visible = true
+				end
+			end
+		end)
+	end
+end)
+
+--------------------------------------------------
+-- EJEMPLO
+--------------------------------------------------
+
+local firstScriptCat = createCategory("Principal")
+buildOption(
+	"Súper Velocidad (Ejemplo)",
+	1,
+	firstScriptCat.ScrollingFrame,
+	[[
+local char = Player.Personaje
+
+if char and char:FindFirstChild("Humanoid") then
+	if estado then
+		char.Humanoid.WalkSpeed ​​= valor
+	else
+		char.Humanoid.WalkSpeed ​​= 16
+	end
+end
+]],
+	nil,
+	true,
+	116
+)
+
+switchCategory(firstScriptCat)
+
+--------------------------------------------------
+-- CARGA
+--------------------------------------------------
+
+task.spawn(function()
+	Main.Position = UDim2.new(0.5, 0, 0.1, 0)
+	Main.Size = UDim2.new(0, 1, 0, 3)
+
+	tw(XenonBar, 0.4, { Size = UDim2.new(1, 0, 0, 3) })
+	task.wait(0.4)
+
+	tw(Main, 0.6, { Size = expandedSize })
+	task.wait(0.7)
+
+	XenonBar.BackgroundTransparency = 0
+	tw(XenonBar, 0.3, { BackgroundTransparency = 1 })
+
+	print("[OAH] ¡Menú cargado correctamente!")
+end)
